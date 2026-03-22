@@ -1,0 +1,24 @@
+-- 1. Додаємо валюту
+INSERT INTO currencies (currency_code, currency_name, symbol) 
+VALUES ('UAH', 'Українська гривня', '₴');
+
+-- 2. Додаємо користувача
+INSERT INTO users (first_name, last_name, email, password_hash) 
+VALUES ('Михайло', 'Бондарчук', 'mykhailo@example.com', 'hash123');
+
+-- 3. Додаємо рахунок для Михайла (user_id = 1)
+INSERT INTO accounts (user_id, account_name, balance, currency_code) 
+VALUES (1, 'Картка Монобанк', 15000.00, 'UAH');
+
+-- 4. Додаємо категорії
+INSERT INTO categories (category_name, type) VALUES 
+('Продукти', 'Expense'),
+('Транспорт', 'Expense'),
+('Зарплата', 'Income');
+
+-- 5. Додаємо кілька транзакцій
+INSERT INTO transactions (account_id, category_id, amount, description) VALUES 
+(1, 1, 1200.50, 'Сільпо - продукти на тиждень'),
+(1, 2, 400.00, 'Квитки на потяг до Луцька'),
+(1, 1, 350.00, 'Кав''ярня'),
+(1, 3, 20000.00, 'Аванс за проєкт');
