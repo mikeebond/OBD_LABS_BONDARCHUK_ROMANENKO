@@ -18,12 +18,12 @@ FROM transactions
 GROUP BY category_id;
 
 -- 1.3. Підрахунок кількость транзакцій по кожному рахунку, але лише для тих рахунків, де більше 1 транзакції (COUNT, GROUP BY, HAVING)
-SELECT 
-    account_id, 
-    COUNT(transaction_id) AS transaction_count 
+SELECT
+    account_id,
+    COUNT(transaction_id) AS transaction_count
 FROM transactions
 GROUP BY account_id
-HAVING COUNT(transaction_id)  1;
+HAVING COUNT(transaction_id) > 1;
 
 -- 1.4. Сумарний ліміт бюджетів для кожного користувача (SUM, GROUP BY)
 SELECT 
@@ -47,7 +47,7 @@ FROM transactions t
 INNER JOIN accounts a ON t.account_id = a.account_id
 INNER JOIN categories c ON t.category_id = c.category_id;
 
--- 2.2. LEFT JOIN Виведення всіх категорій та сум витратдоходів по них (навіть якщо по категорії ще не було транзакцій)
+-- 2.2. LEFT JOIN Виведення всіх категорій та сум витрат/доходів по них (навіть якщо по категорії ще не було транзакцій)
 SELECT 
     c.category_name, 
     COALESCE(SUM(t.amount), 0) AS total_amount 
@@ -67,23 +67,23 @@ RIGHT JOIN tags tg ON tt.tag_id = tg.tag_id;
 -- 3. ЗАПИТИ З ПІДЗАПИТАМИ 
 -- ==========================================
 
--- 3.1. Підзапит у WHERE Знайти всі транзакції, сума яких більша за середню суму всіх транзакцій у системі
+-- 3.1. Підзапит у WHERE: Знайти всі транзакції, сума яких більша за середню суму всіх транзакцій у системі
 SELECT 
     transaction_id, 
     amount, 
     description 
 FROM transactions 
-WHERE amount  (SELECT AVG(amount) FROM transactions);
+WHERE amount > (SELECT AVG(amount) FROM transactions);
 
--- 3.2. Підзапит у SELECT Вивести імена всіх користувачів та їхній загальний поточний баланс з усіх рахунків
+-- 3.2. Підзапит у SELECT: Вивести імена всіх користувачів та їхній загальний поточний баланс з усіх рахунків
 SELECT 
-    name_surname, 
+    first_name || ' ' || last_name AS name_surname, 
     (SELECT COALESCE(SUM(balance), 0) FROM accounts WHERE accounts.user_id = users.user_id) AS total_balance 
 FROM users;
 
--- 3.3. Підзапит із використанням IN Знайти всіх користувачів, які встановили хоча б одну фінансову ціль
+-- 3.3. Підзапит із використанням IN: Знайти всіх користувачів, які встановили хоча б одну фінансову ціль
 SELECT 
-    name_surname, 
+    first_name || ' ' || last_name AS name_surname, 
     email 
 FROM users 
 WHERE user_id IN (SELECT DISTINCT user_id FROM goals);
